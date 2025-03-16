@@ -3,7 +3,7 @@ import argparse
 import torch
 from data.loader import load_dream5_ecoli
 from data.preprocessing import preprocess_data, adjacency_to_edge_index
-from methods.graphical_lasso import compute_graphical_lasso
+from methods.graphical_lasso import compute_graphical_lasso, compute_ledoit_wolf
 from methods.vae import VAE, train_vae
 from methods.cgat import CGAT, train_cgat, conformal_uncertainty
 from methods.link_prediction import link_prediction
@@ -19,7 +19,10 @@ def main(args):
     A_true_tensor = torch.FloatTensor(A_true).to(device)
 
     # Graphical Lasso with alpha from args
-    A = compute_graphical_lasso(G, alpha=args.gl_alpha)
+    #A = compute_graphical_lasso(G, alpha=args.gl_alpha)
+    #edge_index = adjacency_to_edge_index(A, device)
+    # Ledoit-Wolf instead of Graphical Lasso
+    A = compute_ledoit_wolf(G, threshold=args.lw_threshold)
     edge_index = adjacency_to_edge_index(A, device)
 
     # VAE with hyperparameters from args
